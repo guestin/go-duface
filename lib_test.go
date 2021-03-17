@@ -5,6 +5,13 @@ import (
 	"testing"
 )
 
+func Test_LibraryImpl_Drop(t *testing.T) {
+	libs, err := _testCli.NewLibrary("test", false)
+	merrors.AssertError(err, "new lib failed")
+	err = libs.Drop()
+	merrors.AssertError(err, "drop library failed")
+}
+
 func Test_LibraryImpl_RegisterFace(t *testing.T) {
 	libs, err := _testCli.NewLibrary("test", false)
 	merrors.AssertError(err, "new lib failed")
