@@ -5,7 +5,7 @@ package internal
   expires_in: Access Token 的有效期 (秒为单位,一般为 1 个月)；
   其他参数忽略,暂时不用 ;
 */
-type ObtainTokenResponse struct {
+type Credential struct {
 	RefreshToken  string `json:"refresh_token"`
 	ExpireIn      int64  `json:"expires_in"`
 	Scope         string `json:"scope"`

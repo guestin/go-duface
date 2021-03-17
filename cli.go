@@ -3,7 +3,7 @@ package duface
 type Client interface {
 
 	// 创建库实体
-	NewLibrary(groupId string, create bool) (Library, error)
+	NewLibrary(groupId string) (Library, error)
 
 	// 读取库列表
 	// @param offset 默认0,起始序列号

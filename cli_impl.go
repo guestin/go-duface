@@ -43,17 +43,17 @@ func (this *_ClientImpl) getAccessToken() (string, error) {
 		return "", err
 	}
 	irsp, err := requests.Get(this.ctx, _url,
-		opt.BindJSON(new(internal.ObtainTokenResponse)))
+		opt.BindJSON(new(internal.Credential)))
 	if err != nil {
 		return "", err
 	}
-	r := irsp.(*internal.ObtainTokenResponse)
+	r := irsp.(*internal.Credential)
 	this.accessInfo = internal.NewAccessTokenInfo(r.AccessToken, r.ExpireIn, time.Hour)
 	return this.accessInfo.AccessToken, nil
 
 }
 
-func (this *_ClientImpl) NewLibrary(groupId string, create bool) (Library, error) {
+func (this *_ClientImpl) NewLibrary(groupId string) (Library, error) {
 	return newLibrary(this, groupId), nil
 }
 
