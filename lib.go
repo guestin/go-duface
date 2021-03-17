@@ -16,8 +16,14 @@ type Library interface {
 	// 删除单个脸
 	DeleteFace(userId string, faceToken string) error
 
+	// 用户人脸列表
+	ListUserFaces(userId string) ([]*UserFaceItem, error)
+
 	// 删除用户
 	DeleteUser(userId string) error
+
+	// 用户id列表
+	ListUsers(start, length uint) ([]string, error)
 
 	// 1:N 在指定分组中查找人脸
 	Search(imgData *ImageData,

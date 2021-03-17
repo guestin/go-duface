@@ -251,3 +251,8 @@ type FaceDetectResult struct {
 	Num     int                  `json:"face_num"`
 	Results []*FaceDetectionItem `json:"face_list"`
 }
+
+type UserFaceItem struct {
+	FaceToken  string `json:"face_token"`
+	CreateTime string `json:"ctime"`
+}

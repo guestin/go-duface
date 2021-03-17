@@ -81,6 +81,38 @@ func (this *_LibraryImpl) DeleteFace(userId string, faceToken string) error {
 	return nil
 }
 
+func (this *_LibraryImpl) ListUserFaces(userId string) ([]*UserFaceItem, error) {
+	accessToken, err := this.cli.getAccessToken()
+	if err != nil {
+		return nil, err
+	}
+	_url, err := murl.MakeUrlString(internal.DuFaceBusinessUrlV3,
+		murl.WithPath("faceset/face/getlist"),
+		murl.WithQuery("access_token", accessToken))
+	req := struct {
+		UserId  string `json:"user_id"`
+		GroupId string `json:"group_id"`
+	}{
+		UserId:  userId,
+		GroupId: this.groupId,
+	}
+	rsp := struct {
+		BaseResponse
+		Result struct {
+			UserFaceItems []*UserFaceItem `json:"face_list"`
+		} `json:"result"`
+	}{}
+	_, err = requests.Post(this.cli.ctx, _url,
+		opt.BodyJSON(&req), opt.BindJSON(&rsp))
+	if err != nil {
+		return nil, err
+	}
+	if err := rsp.intoError(); err != nil {
+		return nil, err
+	}
+	return rsp.Result.UserFaceItems, nil
+}
+
 func (this *_LibraryImpl) DeleteUser(userId string) error {
 	accessToken, err := this.cli.getAccessToken()
 	if err != nil {
@@ -105,6 +137,40 @@ func (this *_LibraryImpl) DeleteUser(userId string) error {
 		return err
 	}
 	return nil
+}
+
+func (this *_LibraryImpl) ListUsers(start, length uint) ([]string, error) {
+	accessToken, err := this.cli.getAccessToken()
+	if err != nil {
+		return nil, err
+	}
+	_url, err := murl.MakeUrlString(internal.DuFaceBusinessUrlV3,
+		murl.WithPath("faceset/group/getusers"),
+		murl.WithQuery("access_token", accessToken))
+	req := struct {
+		GroupId string `json:"group_id"`
+		Start   uint   `json:"start"`
+		Length  uint   `json:"length"`
+	}{
+		GroupId: this.groupId,
+		Start:   start,
+		Length:  length,
+	}
+	rsp := struct {
+		BaseResponse
+		Result struct {
+			UserIds []string `json:"user_id_list"`
+		} `json:"result"`
+	}{}
+	_, err = requests.Post(this.cli.ctx, _url,
+		opt.BodyJSON(&req), opt.BindJSON(&rsp))
+	if err != nil {
+		return nil, err
+	}
+	if err := rsp.intoError(); err != nil {
+		return nil, err
+	}
+	return rsp.Result.UserIds, nil
 }
 
 func (this *_LibraryImpl) Search(imgData *ImageData, extParam *SearchExtParams) ([]*ComparisonInfo, error) {
