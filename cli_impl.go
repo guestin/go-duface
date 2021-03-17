@@ -102,6 +102,7 @@ func (this *_ClientImpl) FaceDetect(imgData *ImageData, params *DetectExtParams)
 	reqBody[`image`] = imgData.Data
 	reqBody[`image_type`] = imgData.Type
 	if p := params; p != nil {
+		reqBody[`face_field`] = p.FaceFields
 		reqBody[`max_face_num`] = p.MaxFaceNum
 		reqBody[`face_type`] = p.FaceType
 		reqBody[`liveness_control`] = p.LivenessControl

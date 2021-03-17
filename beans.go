@@ -17,7 +17,7 @@ func (this *BaseResponse) intoError() error {
 	return nil
 }
 
-type FaceFields []string
+type FaceFields []FaceField
 
 type FaceField string
 
@@ -56,25 +56,27 @@ const (
 	HIGH    ControlValues = "HIGH"
 )
 
+type ActionType string
+
 type RegExtParams struct {
-	UserInfo        string
-	QualityControl  ControlValues
-	LivenessControl ControlValues
-	ActionType      int
+	// 用户资料，长度限制 256B 默认空
+	UserInfo        string        `json:"user_info"`
+	QualityControl  ControlValues `json:"quality_control"`
+	LivenessControl ControlValues `json:"liveness_control"`
+	ActionType      int           `json:"action_type"`
 }
 
 type FaceLocation struct {
-	Left     float32
-	Top      float32
-	Width    float32
-	Height   float32
-	Rotation int
+	Left     float32 `json:"left"`
+	Top      float32 `json:"top"`
+	Width    float32 `json:"width"`
+	Height   float32 `json:"height"`
+	Rotation int     `json:"rotation"`
 }
 
-type RegisterFaceResponse struct {
-	LogId     uint64        `json:"log_id"`
-	FaceToken string        `json:"face_token"`
-	Location  *FaceLocation `json:"location"`
+type RegisterFaceResult struct {
+	FaceToken string       `json:"face_token"`
+	Location  FaceLocation `json:"location"`
 }
 
 type BasicResponse struct {
@@ -83,22 +85,36 @@ type BasicResponse struct {
 	ErrMsg  string `json:"error_msg"`
 }
 
-type SearchExtParams struct {
-	QualityControl  ControlValues
-	LivenessControl ControlValues
+// 通用搜索扩展参数
+type SearchExtGeneric struct {
+	QualityControl  ControlValues `json:"quality_control,omitempty"`
+	LivenessControl ControlValues `json:"liveness_control,omitempty"`
 	//当需要对特定用户进行比对时,指定 user_id 进行比对.即人脸认证功能.
-	UserId string
+	UserId string `json:"user_id,omitempty"`
 	// 返回相似度最高的几个用户,默认为1,最多返回50个
-	MaxUserNum int
+	MaxUserNum int `json:"max_face_num,omitempty"`
+}
+
+// 1:N 搜索扩展参数
+type SearchExtParams struct {
+	SearchExtGeneric
 	// 0: 代表检测出的人脸按照人脸面积从大到小排列
 	// 1: 代表检测出的人脸按照距离图片中心从近到远排列
 	// 默认为 0
-	FaceSortType int
+	FaceSortType int `json:"face_sort_type"`
+}
+
+// M:N 搜索扩展参数
+type MultiSearchExtParams struct {
+	SearchExtGeneric
+	// 匹配阈值（设置阈值后，score 低于此阈值的用户信息将不会返回） 最大 100 最小 0 默认 80
+	// 此阈值设置得越高，检索速度将会越快，推荐使用默认阈值 80
+	MatchThreshold int `json:"match_threshold,omitempty"`
 }
 
 type ImageData struct {
 	// 图片信息 (总数据大小应小于 10M),图片上传方式根据 image_type 来判断
-	Data string
+	Data string `json:"image"`
 	/*
 		图片类型
 		BASE64: 图片的 base64 值,base64 编码后的图片数据,编码后的图片大小不超过 2M；
@@ -106,19 +122,20 @@ type ImageData struct {
 		FACE_TOKEN: 人脸图片的唯一标识,调用人脸检测接口时,会为每个人脸图片赋予一个唯一的 FACE_TOKEN,
 		同一张图片多次检测得到的 FACE_TOKEN 是同一个.
 	*/
-	Type ImageTypes
+	Type ImageTypes `json:"image_type"`
 }
 
-type MatchInfo struct {
+type ComparisonInfo struct {
 	GroupId  string  `json:"group_id"`
 	UserId   string  `json:"user_id"`
 	UserInfo string  `json:"user_info"`
 	Score    float32 `json:"score"`
 }
 
-type SearchResponse struct {
-	FaceToken    string       `json:"face_token"`
-	MatchResults []*MatchInfo `json:"user_list"`
+type MultiSearchResultItem struct {
+	FaceToken       string            `json:"face_token"`
+	FaceLocation    FaceLocation      `json:"location"`
+	ComparisonInfos []*ComparisonInfo `json:"user_list"`
 }
 
 type DetectExtParams struct {

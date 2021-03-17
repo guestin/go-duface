@@ -2,6 +2,7 @@ package duface
 
 import (
 	_ "embed"
+	"encoding/json"
 )
 
 import (
@@ -9,8 +10,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/guestin/mob/merrors"
-	"github.com/guestin/mob/mio"
-	"io"
 	"os"
 	"testing"
 )
@@ -24,23 +23,33 @@ var kTestAppSecretKey string
 var _testCli = NewClient(context.TODO(), kTestApiKey, kTestAppSecretKey)
 
 func Test_ClientImpl_FaceDetect(t *testing.T) {
-	f, err := os.Open("me.jpeg")
-	merrors.AssertError(err, "open failed")
-	defer mio.CloseIgnoreErr(f)
-	faceBytes, err := io.ReadAll(f)
-	merrors.AssertError(err, "read file failed")
-	imgBase64 := base64.StdEncoding.EncodeToString(faceBytes)
-	detectResult, err := _testCli.FaceDetect(
-		&ImageData{
-			Data: imgBase64,
-			Type: BASE64,
-		}, nil)
+	imgData := readImage("me.jpeg")
+	r, err := _testCli.FaceDetect(
+		imgData, nil)
 	merrors.AssertError(err, "detect failed")
-	fmt.Println(*detectResult)
+	dump(t, r)
 }
 
 func Test_ClientImpl_ListLibraries(t *testing.T) {
 	libs, err := _testCli.ListLibraries(0, 100)
 	merrors.AssertError(err, "list libs failed")
-	fmt.Println(libs)
+	dump(t, libs)
+}
+
+// test tools
+
+func readImage(fileName string) *ImageData {
+	imgBytes, err := os.ReadFile(fileName)
+	merrors.AssertError(err, "read file failed")
+	imgBase64 := base64.StdEncoding.EncodeToString(imgBytes)
+	return &ImageData{
+		Data: imgBase64,
+		Type: BASE64,
+	}
+}
+
+func dump(t testing.TB, v interface{}) {
+	vbyts, err := json.MarshalIndent(v, "", "  ")
+	merrors.AssertError(err, "marshal to json failed")
+	fmt.Printf("test case: [%s]\n%s", t.Name(), vbyts)
 }
