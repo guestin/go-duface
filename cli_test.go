@@ -51,5 +51,5 @@ func readImage(fileName string) *ImageData {
 func dump(t testing.TB, v interface{}) {
 	vbyts, err := json.MarshalIndent(v, "", "  ")
 	merrors.AssertError(err, "marshal to json failed")
-	fmt.Printf("test case: [%s]\n%s", t.Name(), vbyts)
+	fmt.Printf("test case: [%s]\n%s\n", t.Name(), vbyts)
 }

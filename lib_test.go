@@ -44,7 +44,11 @@ func Test_LibraryImpl_Search(t *testing.T) {
 	libs, err := _testCli.NewLibrary("test")
 	merrors.AssertError(err, "new lib failed")
 	imgData := readImage("me.jpeg")
-	r, err := libs.Search(imgData, nil)
+	r, err := libs.Search(imgData, &SearchExtParams{
+		SearchExtGeneric: SearchExtGeneric{
+			GroupIdList: GroupIdList{"admin"},
+		},
+	})
 	merrors.AssertError(err, "search failed")
 	dump(t, r)
 }
