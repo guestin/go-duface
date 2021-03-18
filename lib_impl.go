@@ -47,7 +47,7 @@ func (this *_LibraryImpl) RegisterFace(userId string, imgData *ImageData, extPar
 		opt.BodyJSON(&req), opt.BindJSON(&rsp)); err != nil {
 		return nil, err
 	}
-	if err := rsp.intoError(); err != nil {
+	if err := rsp.parseError(); err != nil {
 		return nil, err
 	}
 	return rsp.Result, nil
@@ -75,7 +75,7 @@ func (this *_LibraryImpl) DeleteFace(userId string, faceToken string) error {
 		opt.BodyJSON(&req), opt.BindJSON(&rsp)); err != nil {
 		return err
 	}
-	if err := rsp.intoError(); err != nil {
+	if err := rsp.parseError(internal.EcFaceNotExist); err != nil {
 		return err
 	}
 	return nil
@@ -107,7 +107,7 @@ func (this *_LibraryImpl) ListUserFaces(userId string) ([]*UserFaceItem, error) 
 	if err != nil {
 		return nil, err
 	}
-	if err := rsp.intoError(); err != nil {
+	if err := rsp.parseError(); err != nil {
 		return nil, err
 	}
 	return rsp.Result.UserFaceItems, nil
@@ -133,7 +133,7 @@ func (this *_LibraryImpl) DeleteUser(userId string) error {
 		opt.BodyJSON(&req), opt.BindJSON(&rsp)); err != nil {
 		return err
 	}
-	if err := rsp.intoError(); err != nil {
+	if err := rsp.parseError(); err != nil {
 		return err
 	}
 	return nil
@@ -167,7 +167,7 @@ func (this *_LibraryImpl) ListUsers(start, length uint) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := rsp.intoError(); err != nil {
+	if err := rsp.parseError(); err != nil {
 		return nil, err
 	}
 	return rsp.Result.UserIds, nil
@@ -182,13 +182,11 @@ func (this *_LibraryImpl) Search(imgData *ImageData, extParam *SearchExtParams) 
 		murl.WithPath("search"),
 		murl.WithQuery("access_token", accessToken))
 	req := struct {
-		Image       string     `json:"image"`
-		ImageType   ImageTypes `json:"image_type"`
-		GroupIdList string     `json:"group_id_list"`
+		*ImageData
+		GroupIdList string `json:"group_id_list"`
 		*SearchExtParams
 	}{
-		Image:           imgData.Data,
-		ImageType:       imgData.Type,
+		ImageData:       imgData,
 		GroupIdList:     strings.Join([]string{this.groupId}, ","),
 		SearchExtParams: extParam,
 	}
@@ -204,7 +202,7 @@ func (this *_LibraryImpl) Search(imgData *ImageData, extParam *SearchExtParams) 
 	if err != nil {
 		return nil, err
 	}
-	if err := rsp.intoError(); err != nil {
+	if err := rsp.parseError(internal.EcMatchUserNotFount); err != nil {
 		return nil, err
 	}
 	return rsp.Result.ComparisonInfos, nil
@@ -243,7 +241,7 @@ func (this *_LibraryImpl) MultiSearch(
 	if err != nil {
 		return nil, err
 	}
-	if err := rsp.intoError(); err != nil {
+	if err := rsp.parseError(internal.EcMatchUserNotFount); err != nil {
 		return nil, err
 	}
 	return rsp.Result.MultiSearchResultItems, nil
@@ -276,5 +274,5 @@ func (this *_LibraryImpl) groupCtl(act string) error {
 		opt.BodyJSON(&req), opt.BindJSON(&rsp)); err != nil {
 		return err
 	}
-	return rsp.intoError()
+	return rsp.parseError()
 }

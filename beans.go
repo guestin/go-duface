@@ -10,14 +10,15 @@ type BaseResponse struct {
 	Cached  int    `json:"cached"`
 }
 
-func (this *BaseResponse) intoError() error {
-	if this.ErrCode != 0 {
-		return merrors.Errorf("[%d]:%s", this.ErrCode, this.ErrMsg)
+func (this *BaseResponse) parseError(expect ...int) error {
+	fullExpect := append([]int{0}, expect...)
+	for _, v := range fullExpect {
+		if v == this.ErrCode {
+			return nil
+		}
 	}
-	return nil
+	return merrors.Errorf0(this.ErrCode, "[%d] %s", this.ErrCode, this.ErrMsg)
 }
-
-type FaceFields []FaceField
 
 type FaceField string
 
@@ -58,12 +59,17 @@ const (
 
 type ActionType string
 
+const (
+	APPEND  ActionType = "APPEND"
+	REPLACE ActionType = "REPLACE"
+)
+
 type RegExtParams struct {
 	// 用户资料，长度限制 256B 默认空
-	UserInfo        string        `json:"user_info"`
-	QualityControl  ControlValues `json:"quality_control"`
-	LivenessControl ControlValues `json:"liveness_control"`
-	ActionType      int           `json:"action_type"`
+	UserInfo        string        `json:"user_info,omitempty"`
+	QualityControl  ControlValues `json:"quality_control,omitempty"`
+	LivenessControl ControlValues `json:"liveness_control,omitempty"`
+	ActionType      ActionType    `json:"action_type,omitempty"`
 }
 
 type FaceLocation struct {
@@ -145,11 +151,11 @@ type DetectExtParams struct {
 			逗号分隔.
 		    默认只返回 face_token,人脸框,概率和旋转角度
 	*/
-	FaceFields FaceFields
+	FaceFields FaceField `json:"face_field,omitempty"`
 	/*
 		最多处理人脸的数目,默认值为 1,根据人脸检测排序类型检测图片中排序第一的人脸（默认为人脸面积最大的人脸）,最大值 120
 	*/
-	MaxFaceNum uint32
+	MaxFaceNum uint32 `json:"max_face_num,omitempty"`
 	/*
 		人脸的类型
 		LIVE 表示生活照:通常为手机,相机拍摄的人像图片,或从网络获取的人像图片等
@@ -158,15 +164,15 @@ type DetectExtParams struct {
 		CERT 表示证件照片:如拍摄的身份证,工卡,护照,学生证等证件图片
 		默认 LIVE
 	*/
-	FaceType        string
-	LivenessControl ControlValues
+	FaceType        string        `json:"face_type,omitempty"`
+	LivenessControl ControlValues `json:"liveness_control,omitempty"`
 	/*
 		人脸检测排序类型
 		0: 代表检测出的人脸按照人脸面积从大到小排列
 		1: 代表检测出的人脸按照距离图片中心从近到远排列
 		默认为 0
 	*/
-	FaceSortType int
+	FaceSortType int `json:"face_sort_type,omitempty"`
 }
 
 type FaceAngle struct {

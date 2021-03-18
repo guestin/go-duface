@@ -5,7 +5,6 @@ import (
 	"github.com/guestin/go-duface/internal"
 	"github.com/guestin/go-requests"
 	"github.com/guestin/go-requests/opt"
-	"github.com/guestin/mob/mjson"
 	"github.com/guestin/mob/murl"
 	"sync"
 	"time"
@@ -57,14 +56,18 @@ func (this *_ClientImpl) NewLibrary(groupId string) (Library, error) {
 	return newLibrary(this, groupId), nil
 }
 
-func (this *_ClientImpl) ListLibraries(offset, length int) ([]string, error) {
+func (this *_ClientImpl) ListLibraries(start, length int) ([]string, error) {
 	accessToken, err := this.getAccessToken()
 	if err != nil {
 		return nil, err
 	}
-	reqBody := mjson.NewObject()
-	reqBody[`start`] = offset
-	reqBody[`length`] = length
+	req := struct {
+		Start  int
+		Length int
+	}{
+		Start:  start,
+		Length: length,
+	}
 	_url, err := murl.MakeUrlString(internal.DuFaceBusinessUrlV3,
 		murl.WithPath("faceset/group/getlist"),
 		murl.WithQuery("access_token", accessToken))
@@ -78,13 +81,12 @@ func (this *_ClientImpl) ListLibraries(offset, length int) ([]string, error) {
 		} `json:"result"`
 	}{}
 	_, err = requests.Post(this.ctx, _url,
-		opt.BodyJSON(reqBody),
-		opt.BindJSON(&rsp),
-		internal.DumpResponse("ListLibraries"))
+		opt.BodyJSON(&req),
+		opt.BindJSON(&rsp))
 	if err != nil {
 		return nil, err
 	}
-	if err = rsp.intoError(); err != nil {
+	if err = rsp.parseError(); err != nil {
 		return nil, err
 	}
 	return rsp.Result.GroupIds, nil
@@ -98,28 +100,24 @@ func (this *_ClientImpl) FaceDetect(imgData *ImageData, params *DetectExtParams)
 	_url, err := murl.MakeUrlString(internal.DuFaceBusinessUrlV3,
 		murl.WithPath("detect"),
 		murl.WithQuery("access_token", accessToken))
-	reqBody := mjson.NewObject()
-	reqBody[`image`] = imgData.Data
-	reqBody[`image_type`] = imgData.Type
-	if p := params; p != nil {
-		reqBody[`face_field`] = p.FaceFields
-		reqBody[`max_face_num`] = p.MaxFaceNum
-		reqBody[`face_type`] = p.FaceType
-		reqBody[`liveness_control`] = p.LivenessControl
-		reqBody[`face_sort_type`] = p.FaceSortType
+	req := struct {
+		*ImageData
+		*DetectExtParams
+	}{
+		ImageData:       imgData,
+		DetectExtParams: params,
 	}
 	rsp := struct {
 		BaseResponse
 		Result *FaceDetectResult `json:"result"`
 	}{}
 	_, err = requests.Post(this.ctx, _url,
-		opt.BodyJSON(reqBody),
-		opt.BindJSON(&rsp),
-		internal.DumpResponse("FaceDetect"))
+		opt.BodyJSON(&req),
+		opt.BindJSON(&rsp))
 	if err != nil {
 		return nil, err
 	}
-	if err = rsp.intoError(); err != nil {
+	if err = rsp.parseError(); err != nil {
 		return nil, err
 	}
 	return rsp.Result, nil

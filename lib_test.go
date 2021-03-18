@@ -5,18 +5,21 @@ import (
 	"testing"
 )
 
-func Test_LibraryImpl_Drop(t *testing.T) {
+func Test_LibraryImpl_Create(t *testing.T) {
 	libs, err := _testCli.NewLibrary("test")
 	merrors.AssertError(err, "new lib failed")
-	err = libs.Drop()
-	merrors.AssertError(err, "drop library failed")
+	err = libs.Create()
+	merrors.AssertError(err, "create library failed")
 }
 
 func Test_LibraryImpl_RegisterFace(t *testing.T) {
 	libs, err := _testCli.NewLibrary("test")
 	merrors.AssertError(err, "new lib failed")
 	imgData := readImage("me.jpeg")
-	r, err := libs.RegisterFace("su", imgData, nil)
+	r, err := libs.RegisterFace("su", imgData,
+		&RegExtParams{
+			ActionType: REPLACE,
+		})
 	merrors.AssertError(err, "register facefailed")
 	dump(t, r)
 }
@@ -44,13 +47,6 @@ func Test_LibraryImpl_ListUserFaces(t *testing.T) {
 	dump(t, ll)
 }
 
-func Test_LibraryImpl_DeleteFace(t *testing.T) {
-	libs, err := _testCli.NewLibrary("test")
-	merrors.AssertError(err, "new lib failed")
-	err = libs.DeleteFace("su", "${which face token}")
-	merrors.AssertError(err, "delete user failed")
-}
-
 func Test_LibraryImpl_Search(t *testing.T) {
 	libs, err := _testCli.NewLibrary("test")
 	merrors.AssertError(err, "new lib failed")
@@ -67,4 +63,18 @@ func Test_LibraryImpl_MultiSearch(t *testing.T) {
 	r, err := libs.MultiSearch(imgData, nil)
 	merrors.AssertError(err, "search failed")
 	dump(t, r)
+}
+
+func Test_LibraryImpl_DeleteFace(t *testing.T) {
+	libs, err := _testCli.NewLibrary("test")
+	merrors.AssertError(err, "new lib failed")
+	err = libs.DeleteFace("su", "0820eded50c3f938b791bc11b9df61f7")
+	merrors.AssertError(err, "delete user failed")
+}
+
+func Test_LibraryImpl_Drop(t *testing.T) {
+	libs, err := _testCli.NewLibrary("test")
+	merrors.AssertError(err, "new lib failed")
+	err = libs.Drop()
+	merrors.AssertError(err, "drop library failed")
 }

@@ -9,7 +9,8 @@ type Library interface {
 	Drop() error
 
 	// 人脸入库
-	RegisterFace(userId string,
+	RegisterFace(
+		userId string,
 		imgData *ImageData,
 		extParams *RegExtParams) (*RegisterFaceResult, error)
 
