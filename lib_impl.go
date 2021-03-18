@@ -1,6 +1,7 @@
 package duface
 
 import (
+	"context"
 	"github.com/guestin/go-duface/internal"
 	"github.com/guestin/go-requests"
 	"github.com/guestin/go-requests/opt"
@@ -9,19 +10,21 @@ import (
 )
 
 type _LibraryImpl struct {
-	cli     *_ClientImpl
+	ctx     context.Context
+	cli     Client
 	groupId string
 }
 
-func newLibrary(cli *_ClientImpl, groupId string) Library {
+func newLibrary(cli Client, groupId string) Library {
 	return &_LibraryImpl{
+		ctx:     cli.GetContext(),
 		cli:     cli,
 		groupId: groupId,
 	}
 }
 
 func (this *_LibraryImpl) RegisterFace(userId string, imgData *ImageData, extParams *RegExtParams) (*RegisterFaceResult, error) {
-	accessToken, err := this.cli.getAccessToken()
+	accessToken, err := this.cli.GetAccessToken()
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +46,7 @@ func (this *_LibraryImpl) RegisterFace(userId string, imgData *ImageData, extPar
 		BaseResponse
 		Result *RegisterFaceResult `json:"result" validate:"omitempty,required"`
 	}{}
-	if _, err = requests.Post(this.cli.ctx, _url,
+	if _, err = requests.Post(this.ctx, _url,
 		opt.BodyJSON(&req), opt.BindJSON(&rsp)); err != nil {
 		return nil, err
 	}
@@ -54,7 +57,7 @@ func (this *_LibraryImpl) RegisterFace(userId string, imgData *ImageData, extPar
 }
 
 func (this *_LibraryImpl) DeleteFace(userId string, faceToken string) error {
-	accessToken, err := this.cli.getAccessToken()
+	accessToken, err := this.cli.GetAccessToken()
 	if err != nil {
 		return err
 	}
@@ -71,7 +74,7 @@ func (this *_LibraryImpl) DeleteFace(userId string, faceToken string) error {
 		FaceToken: faceToken,
 	}
 	rsp := BaseResponse{}
-	if _, err = requests.Post(this.cli.ctx, _url,
+	if _, err = requests.Post(this.ctx, _url,
 		opt.BodyJSON(&req), opt.BindJSON(&rsp)); err != nil {
 		return err
 	}
@@ -82,7 +85,7 @@ func (this *_LibraryImpl) DeleteFace(userId string, faceToken string) error {
 }
 
 func (this *_LibraryImpl) ListUserFaces(userId string) ([]*UserFaceItem, error) {
-	accessToken, err := this.cli.getAccessToken()
+	accessToken, err := this.cli.GetAccessToken()
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +105,7 @@ func (this *_LibraryImpl) ListUserFaces(userId string) ([]*UserFaceItem, error) 
 			UserFaceItems []*UserFaceItem `json:"face_list"`
 		} `json:"result"`
 	}{}
-	_, err = requests.Post(this.cli.ctx, _url,
+	_, err = requests.Post(this.ctx, _url,
 		opt.BodyJSON(&req), opt.BindJSON(&rsp))
 	if err != nil {
 		return nil, err
@@ -114,7 +117,7 @@ func (this *_LibraryImpl) ListUserFaces(userId string) ([]*UserFaceItem, error) 
 }
 
 func (this *_LibraryImpl) DeleteUser(userId string) error {
-	accessToken, err := this.cli.getAccessToken()
+	accessToken, err := this.cli.GetAccessToken()
 	if err != nil {
 		return err
 	}
@@ -129,7 +132,7 @@ func (this *_LibraryImpl) DeleteUser(userId string) error {
 		GroupId: this.groupId,
 	}
 	rsp := BaseResponse{}
-	if _, err = requests.Post(this.cli.ctx, _url,
+	if _, err = requests.Post(this.ctx, _url,
 		opt.BodyJSON(&req), opt.BindJSON(&rsp)); err != nil {
 		return err
 	}
@@ -140,7 +143,7 @@ func (this *_LibraryImpl) DeleteUser(userId string) error {
 }
 
 func (this *_LibraryImpl) ListUsers(start, length uint) ([]string, error) {
-	accessToken, err := this.cli.getAccessToken()
+	accessToken, err := this.cli.GetAccessToken()
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +165,7 @@ func (this *_LibraryImpl) ListUsers(start, length uint) ([]string, error) {
 			UserIds []string `json:"user_id_list"`
 		} `json:"result"`
 	}{}
-	_, err = requests.Post(this.cli.ctx, _url,
+	_, err = requests.Post(this.ctx, _url,
 		opt.BodyJSON(&req), opt.BindJSON(&rsp))
 	if err != nil {
 		return nil, err
@@ -174,7 +177,7 @@ func (this *_LibraryImpl) ListUsers(start, length uint) ([]string, error) {
 }
 
 func (this *_LibraryImpl) Search(imgData *ImageData, extParam *SearchExtParams) ([]*ComparisonInfo, error) {
-	accessToken, err := this.cli.getAccessToken()
+	accessToken, err := this.cli.GetAccessToken()
 	if err != nil {
 		return nil, err
 	}
@@ -197,7 +200,7 @@ func (this *_LibraryImpl) Search(imgData *ImageData, extParam *SearchExtParams) 
 			ComparisonInfos []*ComparisonInfo `json:"user_list"`
 		} `json:"result"`
 	}{}
-	_, err = requests.Post(this.cli.ctx, _url,
+	_, err = requests.Post(this.ctx, _url,
 		opt.BodyJSON(&req), opt.BindJSON(&rsp))
 	if err != nil {
 		return nil, err
@@ -211,7 +214,7 @@ func (this *_LibraryImpl) Search(imgData *ImageData, extParam *SearchExtParams) 
 func (this *_LibraryImpl) MultiSearch(
 	imgData *ImageData,
 	extParam *MultiSearchExtParams) ([]*MultiSearchResultItem, error) {
-	accessToken, err := this.cli.getAccessToken()
+	accessToken, err := this.cli.GetAccessToken()
 	if err != nil {
 		return nil, err
 	}
@@ -236,7 +239,7 @@ func (this *_LibraryImpl) MultiSearch(
 			MultiSearchResultItems []*MultiSearchResultItem `json:"face_list"`
 		} `json:"result"`
 	}{}
-	_, err = requests.Post(this.cli.ctx, _url,
+	_, err = requests.Post(this.ctx, _url,
 		opt.BodyJSON(&req), opt.BindJSON(&rsp))
 	if err != nil {
 		return nil, err
@@ -256,7 +259,7 @@ func (this *_LibraryImpl) Create() error {
 }
 
 func (this *_LibraryImpl) groupCtl(act string) error {
-	accessToken, err := this.cli.getAccessToken()
+	accessToken, err := this.cli.GetAccessToken()
 	if err != nil {
 		return err
 	}
@@ -270,7 +273,7 @@ func (this *_LibraryImpl) groupCtl(act string) error {
 		GroupId: this.groupId,
 	}
 	rsp := BaseResponse{}
-	if _, err := requests.Post(this.cli.ctx, _url,
+	if _, err := requests.Post(this.ctx, _url,
 		opt.BodyJSON(&req), opt.BindJSON(&rsp)); err != nil {
 		return err
 	}

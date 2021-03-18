@@ -27,7 +27,11 @@ func NewClient(ctx context.Context, apiKey, appSecret string) Client {
 	}
 }
 
-func (this *_ClientImpl) getAccessToken() (string, error) {
+func (this *_ClientImpl) GetContext() context.Context {
+	return this.ctx
+}
+
+func (this *_ClientImpl) GetAccessToken() (string, error) {
 	this.locker.Lock()
 	defer this.locker.Unlock()
 	if this.accessInfo != nil && !this.accessInfo.IsExpired() {
@@ -52,12 +56,35 @@ func (this *_ClientImpl) getAccessToken() (string, error) {
 
 }
 
-func (this *_ClientImpl) NewLibrary(groupId string) (Library, error) {
-	return newLibrary(this, groupId), nil
+type _ScopeClient struct {
+	newCtx context.Context
+	Client
+}
+
+func (this *_ScopeClient) GetContext() context.Context {
+	return this.newCtx
+}
+
+func (this *_ClientImpl) NewLibrary(groupId string, opts ...LibraryOpt) (Library, error) {
+	libOpt := _LibraryConfig{}
+	for _, it := range opts {
+		it(&libOpt)
+	}
+	var cli Client
+	if libOpt.ctx != nil {
+		cli = &_ScopeClient{
+			newCtx: libOpt.ctx,
+			Client: this,
+		}
+	} else {
+		cli = this
+	}
+	return newLibrary(cli, groupId), nil
+
 }
 
 func (this *_ClientImpl) ListLibraries(start, length int) ([]string, error) {
-	accessToken, err := this.getAccessToken()
+	accessToken, err := this.GetAccessToken()
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +120,7 @@ func (this *_ClientImpl) ListLibraries(start, length int) ([]string, error) {
 }
 
 func (this *_ClientImpl) FaceDetect(imgData *ImageData, params *DetectExtParams) (*FaceDetectResult, error) {
-	accessToken, err := this.getAccessToken()
+	accessToken, err := this.GetAccessToken()
 	if err != nil {
 		return nil, err
 	}
