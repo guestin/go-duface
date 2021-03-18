@@ -6,7 +6,6 @@ import (
 	"github.com/guestin/go-requests"
 	"github.com/guestin/go-requests/opt"
 	"github.com/guestin/mob/murl"
-	"strings"
 )
 
 type _LibraryImpl struct {
@@ -184,17 +183,17 @@ func (this *_LibraryImpl) Search(imgData *ImageData, extParam *SearchExtParams) 
 	_url, err := murl.MakeUrlString(internal.DuFaceBusinessUrlV3,
 		murl.WithPath("search"),
 		murl.WithQuery("access_token", accessToken))
-	groupIds := []string{this.groupId}
+	groupIds := GroupIdList{this.groupId}
 	if extParam != nil && len(extParam.GroupIdList) != 0 {
 		groupIds = append(groupIds, extParam.GroupIdList...)
 	}
 	req := struct {
 		*ImageData
-		GroupIdList string `json:"group_id_list"`
+		GroupIdList GroupIdList `json:"group_id_list"`
 		*SearchExtParams
 	}{
 		ImageData:       imgData,
-		GroupIdList:     strings.Join(groupIds, `,`),
+		GroupIdList:     groupIds,
 		SearchExtParams: extParam,
 	}
 	rsp := struct {
@@ -225,19 +224,19 @@ func (this *_LibraryImpl) MultiSearch(
 	_url, err := murl.MakeUrlString(internal.DuFaceBusinessUrlV3,
 		murl.WithPath("multi-search"),
 		murl.WithQuery("access_token", accessToken))
-	groupIds := []string{this.groupId}
+	groupIds := GroupIdList{this.groupId}
 	if extParam != nil && len(extParam.GroupIdList) != 0 {
 		groupIds = append(groupIds, extParam.GroupIdList...)
 	}
 	req := struct {
-		Image       string     `json:"image"`
-		ImageType   ImageTypes `json:"image_type"`
-		GroupIdList string     `json:"group_id_list"`
+		Image       string      `json:"image"`
+		ImageType   ImageTypes  `json:"image_type"`
+		GroupIdList GroupIdList `json:"group_id_list"`
 		*MultiSearchExtParams
 	}{
 		Image:                imgData.Data,
 		ImageType:            imgData.Type,
-		GroupIdList:          strings.Join(groupIds, `,`),
+		GroupIdList:          groupIds,
 		MultiSearchExtParams: extParam,
 	}
 	rsp := struct {

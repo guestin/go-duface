@@ -1,6 +1,9 @@
 package duface
 
-import "github.com/guestin/mob/merrors"
+import (
+	"github.com/guestin/mob/merrors"
+	"strings"
+)
 
 type BaseResponse struct {
 	ErrCode int    `json:"error_code"`
@@ -20,7 +23,16 @@ func (this *BaseResponse) parseError(expect ...int) error {
 	return merrors.Errorf0(this.ErrCode, "[%d] %s", this.ErrCode, this.ErrMsg)
 }
 
-type FaceField string
+type FaceField = string
+
+type FaceFields []FaceField
+
+func (this FaceFields) MarshalText() ([]byte, error) {
+	if len(this) == 0 {
+		return []byte(""), nil
+	}
+	return []byte(strings.Join(this, ",")), nil
+}
 
 const (
 	AGE         FaceField = "age"
@@ -39,7 +51,7 @@ const (
 	SPOOFING    FaceField = "spoofing" // 合成图检测
 )
 
-type ImageTypes string
+type ImageTypes = string
 
 const (
 	BASE64     ImageTypes = "BASE64"
@@ -47,7 +59,7 @@ const (
 	FACE_TOKEN ImageTypes = "FACE_TOKEN"
 )
 
-type ControlValues string
+type ControlValues = string
 
 const (
 	NONE    ControlValues = "NONE"
@@ -57,7 +69,7 @@ const (
 	HIGH    ControlValues = "HIGH"
 )
 
-type ActionType string
+type ActionType = string
 
 const (
 	APPEND  ActionType = "APPEND"
@@ -91,6 +103,15 @@ type BasicResponse struct {
 	ErrMsg  string `json:"error_msg"`
 }
 
+type GroupIdList []string
+
+func (this GroupIdList) MarshalText() ([]byte, error) {
+	if len(this) == 0 {
+		return []byte(""), nil
+	}
+	return []byte(strings.Join(this, ",")), nil
+}
+
 // 通用搜索扩展参数
 type SearchExtGeneric struct {
 	QualityControl  ControlValues `json:"quality_control,omitempty"`
@@ -101,7 +122,7 @@ type SearchExtGeneric struct {
 	MaxUserNum int `json:"max_face_num,omitempty"`
 	// 从指定的 group 中进行查找 用逗号分隔，上限 10 个
 	// 由于library本身占用了一个,所以这里最多支持9个
-	GroupIdList []string `json:"-"`
+	GroupIdList GroupIdList `json:"-"`
 }
 
 // 1:N 搜索扩展参数
@@ -154,7 +175,7 @@ type DetectExtParams struct {
 			逗号分隔.
 		    默认只返回 face_token,人脸框,概率和旋转角度
 	*/
-	FaceFields FaceField `json:"face_field,omitempty"`
+	FaceFields FaceFields `json:"face_field,omitempty"`
 	/*
 		最多处理人脸的数目,默认值为 1,根据人脸检测排序类型检测图片中排序第一的人脸（默认为人脸面积最大的人脸）,最大值 120
 	*/
