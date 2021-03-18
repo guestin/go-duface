@@ -99,6 +99,9 @@ type SearchExtGeneric struct {
 	UserId string `json:"user_id,omitempty"`
 	// 返回相似度最高的几个用户,默认为1,最多返回50个
 	MaxUserNum int `json:"max_face_num,omitempty"`
+	// 从指定的 group 中进行查找 用逗号分隔，上限 10 个
+	// 由于library本身占用了一个,所以这里最多支持9个
+	GroupIdList []string `json:"-"`
 }
 
 // 1:N 搜索扩展参数
