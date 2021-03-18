@@ -119,7 +119,7 @@ func (this *_ClientImpl) ListLibraries(start, length int) ([]string, error) {
 	return rsp.Result.GroupIds, nil
 }
 
-func (this *_ClientImpl) FaceDetect(imgData *ImageData, params *DetectExtParams) (*FaceDetectResult, error) {
+func (this *_ClientImpl) FaceDetect(imgData *ImageData, params *DetectExtParams) (*DetectResult, error) {
 	accessToken, err := this.GetAccessToken()
 	if err != nil {
 		return nil, err
@@ -136,7 +136,7 @@ func (this *_ClientImpl) FaceDetect(imgData *ImageData, params *DetectExtParams)
 	}
 	rsp := struct {
 		BaseResponse
-		Result *FaceDetectResult `json:"result"`
+		Result *DetectResult `json:"result"`
 	}{}
 	_, err = requests.Post(this.ctx, _url,
 		opt.BodyJSON(&req),

@@ -13,7 +13,7 @@ type Client interface {
 	ListLibraries(offset, length int) ([]string, error)
 
 	// 人脸检测
-	FaceDetect(imgData *ImageData, params *DetectExtParams) (*FaceDetectResult, error)
+	FaceDetect(imgData *ImageData, params *DetectExtParams) (*DetectResult, error)
 
 	// get current context
 	GetContext() context.Context

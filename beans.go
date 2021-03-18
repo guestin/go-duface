@@ -242,44 +242,44 @@ type FaceQuality struct {
 	Completeness int
 }
 
-type FaceDetectionItem struct {
+type DetectResultItem struct {
 	// 人脸图片的唯一标识 （人脸检测 face_token 有效期为 60min）
-	Token string `json:"face_token"`
+	Token string `json:"face_token,omitempty"`
 	// 人脸在图片中的位置
-	Location FaceLocation `json:"location"`
+	Location FaceLocation `json:"location,omitempty"`
 	// 人脸置信度,范围[0~1],代表这是一张人脸的概率,0 最小,1 最大.其中返回 0 或 1 时,数据类型为 Integer
-	Probability float32 `json:"face_probability"`
+	Probability float32 `json:"face_probability,omitempty"`
 	// 人脸旋转角度参数
-	Angle FaceAngle `json:"angle"`
+	Angle FaceAngle `json:"angle,omitempty"`
 	// 年龄 ,当 face_field 包含 age 时返回
-	Age *float32 `json:"age"`
+	Age *float32 `json:"age,omitempty"`
 	// 美丑打分,范围 0-100,越大表示越美.当 face_fields 包含 beauty 时返回
-	Beauty *int `json:"beauty"`
+	Beauty *int `json:"beauty,omitempty"`
 	// type: none: 不笑；smile: 微笑；laugh: 大笑
-	Expression *FaceAttribute `json:"expression"` // 表情,当 face_field 包含 expression 时返回
+	Expression *FaceAttribute `json:"expression,omitempty"` // 表情,当 face_field 包含 expression 时返回
 	// type: square: 正方形 triangle: 三角形 oval: 椭圆 heart: 心形 round: 圆形
-	Shape *FaceAttribute `json:"face_shape"` // 脸型,当 face_field 包含 face_shape 时返回
+	Shape *FaceAttribute `json:"face_shape,omitempty"` // 脸型,当 face_field 包含 face_shape 时返回
 	// type: male: 男性 female: 女性
-	Gender *FaceAttribute `json:"gender"` // 性别,face_field 包含 gender 时返回
+	Gender *FaceAttribute `json:"gender,omitempty"` // 性别,face_field 包含 gender 时返回
 	// type: none: 无眼镜,common: 普通眼镜,sun: 墨镜
-	Glasses   *FaceAttribute `json:"glasses"`    // 性别,face_field 包含 glasses 时返回
-	EyeStatus *EyeStatus     `json:"eye_status"` // 双眼状态（睁开 / 闭合） face_field 包含 eye_status 时返回
+	Glasses   *FaceAttribute `json:"glasses,omitempty"`    // 性别,face_field 包含 glasses 时返回
+	EyeStatus *EyeStatus     `json:"eye_status,omitempty"` // 双眼状态（睁开 / 闭合） face_field 包含 eye_status 时返回
 	// type: angry: 愤怒 disgust: 厌恶 fear: 恐惧 happy: 高兴 sad: 伤心 surprise: 惊讶 neutral: 无表情 pouty: 撅嘴 grimace: 鬼脸
-	Emotion *FaceAttribute `json:"emotion"` // 情绪 face_field 包含 emotion 时返回
+	Emotion *FaceAttribute `json:"emotion,omitempty"` // 情绪 face_field 包含 emotion 时返回
 	// type: human: 真实人脸 cartoon: 卡通人脸
-	Type *FaceAttribute `json:"face_field"` //真实人脸 / 卡通人脸 face_field 包含 face_type 时返回
+	Type *FaceAttribute `json:"face_field,omitempty"` //真实人脸 / 卡通人脸 face_field 包含 face_type 时返回
 	// type: 没戴口罩 / 戴口罩 取值 0 或 1 0 代表没戴口罩 1 代表戴口罩
-	Mask        *FaceAttribute  `json:"mask"`        // 口罩识别 face_field 包含 mask 时返回
-	Landmark    []LandmarkPoint `json:"landmark"`    // 4 个关键点位置,左眼中心,右眼中心,鼻尖,嘴中心.face_field 包含 landmark 时返回
-	Landmark72  []LandmarkPoint `json:"landmark72"`  // 72 个特征点位置 face_field 包含 landmark72 时返回
-	Landmark150 []LandmarkPoint `json:"landmark150"` // 150 个特征点位置 face_field 包含 landmark150 时返回
-	Quality     *FaceQuality    `json:"quality"`     //人脸质量信息.face_field 包含 quality 时返回
-	Spoofing    float32         `json:"spoofing"`    // 判断图片是否为合成图,注意:官方文档对该字段的取值范围没有说明
+	Mask        *FaceAttribute  `json:"mask,omitempty"`        // 口罩识别 face_field 包含 mask 时返回
+	Landmark    []LandmarkPoint `json:"landmark,omitempty"`    // 4 个关键点位置,左眼中心,右眼中心,鼻尖,嘴中心.face_field 包含 landmark 时返回
+	Landmark72  []LandmarkPoint `json:"landmark72,omitempty"`  // 72 个特征点位置 face_field 包含 landmark72 时返回
+	Landmark150 []LandmarkPoint `json:"landmark150,omitempty"` // 150 个特征点位置 face_field 包含 landmark150 时返回
+	Quality     *FaceQuality    `json:"quality,omitempty"`     //人脸质量信息.face_field 包含 quality 时返回
+	Spoofing    float32         `json:"spoofing,omitempty"`    // 判断图片是否为合成图,注意:官方文档对该字段的取值范围没有说明
 }
 
-type FaceDetectResult struct {
-	Num     int                  `json:"face_num"`
-	Results []*FaceDetectionItem `json:"face_list"`
+type DetectResult struct {
+	FaceNum           int                 `json:"face_num"`
+	DetectResultItems []*DetectResultItem `json:"face_list"`
 }
 
 type UserFaceItem struct {
