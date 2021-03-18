@@ -26,9 +26,9 @@ func Test_ClientImpl_FaceDetect(t *testing.T) {
 
 ```go
 func Test_ClientImpl_ListLibraries(t *testing.T) {
-libs, err := _testCli.ListLibraries(0, 100)
-merrors.AssertError(err, "list libs failed")
-dump(t, libs)
+   libs, err := _testCli.ListLibraries(0, 100)
+   merrors.AssertError(err, "list libs failed")
+   dump(t, libs)
 }
 ```
 
@@ -36,10 +36,10 @@ dump(t, libs)
 
 ```go
 func Test_LibraryImpl_Create(t *testing.T) {
-libs, err := _testCli.NewLibrary("test")
-merrors.AssertError(err, "new lib failed")
-err = libs.Create()
-merrors.AssertError(err, "create library failed")
+  libs, err := _testCli.NewLibrary("test")
+  merrors.AssertError(err, "new lib failed")
+  err = libs.Create()
+  merrors.AssertError(err, "create library failed")
 }
 ```
 
@@ -47,11 +47,11 @@ merrors.AssertError(err, "create library failed")
 
 ```go
 func Test_LibraryImpl_RegisterFace(t *testing.T) {
-libs, err := _testCli.NewLibrary("test", false)
-merrors.AssertError(err, "new lib failed")
-imgData := readImage("me.jpeg")
-r, err := libs.RegisterFace("su", imgData, nil)
-merrors.AssertError(err, "register facefailed")
+  libs, err := _testCli.NewLibrary("test", false)
+  merrors.AssertError(err, "new lib failed")
+  imgData := readImage("me.jpeg")
+  r, err := libs.RegisterFace("su", imgData, nil)
+  merrors.AssertError(err, "register facefailed")
   dump(t, r)
 }
 ```
@@ -120,12 +120,12 @@ func Test_LibraryImpl_Search(t *testing.T) {
 
 ```go
 func Test_LibraryImpl_MultiSearch(t *testing.T) {
-libs, err := _testCli.NewLibrary("test", false)
-merrors.AssertError(err, "new lib failed")
-imgData := readImage("me.jpeg")
-r, err := libs.MultiSearch(imgData, nil)
-merrors.AssertError(err, "search failed")
-dump(t, r)
+  libs, err := _testCli.NewLibrary("test", false)
+  merrors.AssertError(err, "new lib failed")
+  imgData := readImage("me.jpeg")
+  r, err := libs.MultiSearch(imgData, nil)
+  merrors.AssertError(err, "search failed")
+  dump(t, r)
 }
 ```
 
@@ -133,10 +133,10 @@ dump(t, r)
 
 ```go
 func Test_LibraryImpl_Drop(t *testing.T) {
-libs, err := _testCli.NewLibrary("test")
-merrors.AssertError(err, "new lib failed")
-err = libs.Drop()
-merrors.AssertError(err, "drop library failed")
+  libs, err := _testCli.NewLibrary("test")
+  merrors.AssertError(err, "new lib failed")
+  err = libs.Drop()
+  merrors.AssertError(err, "drop library failed")
 }
 ```
 
