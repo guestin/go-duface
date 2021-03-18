@@ -24,13 +24,6 @@ func Test_LibraryImpl_RegisterFace(t *testing.T) {
 	dump(t, r)
 }
 
-func Test_LibraryImpl_DeleteUser(t *testing.T) {
-	libs, err := _testCli.NewLibrary("test")
-	merrors.AssertError(err, "new lib failed")
-	err = libs.DeleteUser("su")
-	merrors.AssertError(err, "delete user failed")
-}
-
 func Test_LibraryImpl_ListUsers(t *testing.T) {
 	libs, err := _testCli.NewLibrary("test")
 	merrors.AssertError(err, "new lib failed")
@@ -69,6 +62,13 @@ func Test_LibraryImpl_DeleteFace(t *testing.T) {
 	libs, err := _testCli.NewLibrary("test")
 	merrors.AssertError(err, "new lib failed")
 	err = libs.DeleteFace("su", "0820eded50c3f938b791bc11b9df61f7")
+	merrors.AssertError(err, "delete user failed")
+}
+
+func Test_LibraryImpl_DeleteUser(t *testing.T) {
+	libs, err := _testCli.NewLibrary("test")
+	merrors.AssertError(err, "new lib failed")
+	err = libs.DeleteUser("su")
 	merrors.AssertError(err, "delete user failed")
 }
 
