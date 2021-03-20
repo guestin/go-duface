@@ -10,8 +10,8 @@ github.com/go-playground/universal-translator v0.17.0/go.mod h1:UkSxE5sNxxRwHyU+
 github.com/go-playground/validator/v10 v10.4.1 h1:pH2c5ADXtd66mxoE0Zm9SUhxE20r7aM3F26W0hOn+GE=
 github.com/go-playground/validator/v10 v10.4.1/go.mod h1:nlOn6nFhuKACm19sB/8EGNn9GlaMV7XkbRSipzJ0Ii4=
 github.com/google/uuid v1.1.2/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
-github.com/guestin/go-requests v0.0.8 h1:TKdROouom+nVPdBXIsn4IUXWRWpUMkF570/fL9itWg0=
-github.com/guestin/go-requests v0.0.8/go.mod h1:gB+JWM1CotK0tHuHu0DpMTmp7TmeXrxgHTx4IAEl+9c=
+github.com/guestin/go-requests v0.0.9 h1:udMlhGrinOVA0synB2PGI5p1zGJs02LNBttqkgeEGTk=
+github.com/guestin/go-requests v0.0.9/go.mod h1:gB+JWM1CotK0tHuHu0DpMTmp7TmeXrxgHTx4IAEl+9c=
 github.com/guestin/mob v1.0.7 h1:EOtNE9L+OYcxkVDGvYGzTHid8W0lXeMFInlZm//JBqM=
 github.com/guestin/mob v1.0.7/go.mod h1:rIQZ+ImMfZM8E3wyP4mpS8Ux9T92198XtQMFT/l6enI=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
